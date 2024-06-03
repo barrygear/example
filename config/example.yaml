@@ -1,0 +1,77 @@
+apiVersion: "eksctl.io/v1alpha5"
+kind: "ClusterConfig"
+metadata:
+  name: devsftesting-eks
+  region: us-west-2
+  version: "1.29"
+  tags:
+    Gamelong: "testing"
+    Environment: "developmnent"
+    Service: "eks"
+    Studio: "sf"
+    Reserve: "none"
+vpc:
+  id: vpc-04475aebf70aa49e3
+  cidr: 172.18.0.0/16
+  subnets:
+    public:
+      us-west-2b:
+        id: subnet-02d0a4bee2c6a7b2c
+      us-west-2c:
+        id: subnet-0000e1047544319dd
+      us-west-2a:
+        id: subnet-0f9fb21227ab6836d
+    private:
+      us-west-2b:
+        id: subnet-0820c4120afd454cc
+      us-west-2a:
+        id: subnet-093b8d76a31cfd58c
+      us-west-2c:
+        id: subnet-0275f3983036ccc3e
+iam:
+  withOIDC: true
+addons:
+  - name: vpc-cni
+    resolveConflicts: overwrite
+  - name: kube-proxy
+    resolveConflicts: overwrite
+  - name: coredns
+    resolveConflicts: overwrite
+managedNodeGroups:
+  - name: my-mng
+    instanceType: t3.micro
+    desiredCapacity: 1
+    labels:
+      role: shared
+    minSize: 1
+    maxSize: 3
+    volumeSize: 10
+    volumeType: gp3
+    privateNetworking: true
+    tags:
+      Gamelong: "testing"
+      Environment: "developmnent"
+      Service: "eks"
+      Studio: "sf"
+      Reserve: "none"
+    iam:
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      withAddonPolicies:
+        imageBuilder: false
+        autoScaler: false
+        externalDNS: false
+        certManager: false
+        efs: false
+        ebs: false
+        albIngress: false
+    preBootstrapCommands:
+      - sudo yum update -y --security
+      - sudo yum install -y amazon-ssm-agent
+      - sudo systemctl enable amazon-ssm-agent
+      - sudo systemctl start amazon-ssm-agent
