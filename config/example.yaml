@@ -3,7 +3,7 @@ kind: "ClusterConfig"
 metadata:
   name: devsftesting-eks
   region: us-west-2
-  version: "1.28"
+  version: "1.29"
   tags:
     Gamelong: "testing"
     Environment: "developmnent"
@@ -32,11 +32,14 @@ iam:
   withOIDC: true
 addons:
   - name: vpc-cni
-    resolveConflicts: overwrite
+    resolveConflicts: preserve
+    version: v1.16.0-eksbuild.1
   - name: kube-proxy
-    resolveConflicts: overwrite
+    resolveConflicts: preserve
+    version: v1.29.0-eksbuild.1
   - name: coredns
-    resolveConflicts: overwrite
+    resolveConflicts: preserve
+    version: v1.11.1-eksbuild.4
 managedNodeGroups:
   - name: my-mng
     instanceType: t3.medium
