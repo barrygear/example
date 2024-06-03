@@ -1,0 +1,141 @@
+accessConfig:
+  authenticationMode: API_AND_CONFIG_MAP
+addons:
+- name: vpc-cni
+  resolveConflicts: overwrite
+  wellKnownPolicies:
+    autoScaler: false
+    awsLoadBalancerController: false
+    certManager: false
+    ebsCSIController: false
+    efsCSIController: false
+    externalDNS: false
+    imageBuilder: false
+- name: kube-proxy
+  resolveConflicts: overwrite
+  wellKnownPolicies:
+    autoScaler: false
+    awsLoadBalancerController: false
+    certManager: false
+    ebsCSIController: false
+    efsCSIController: false
+    externalDNS: false
+    imageBuilder: false
+- name: coredns
+  resolveConflicts: overwrite
+  wellKnownPolicies:
+    autoScaler: false
+    awsLoadBalancerController: false
+    certManager: false
+    ebsCSIController: false
+    efsCSIController: false
+    externalDNS: false
+    imageBuilder: false
+apiVersion: eksctl.io/v1alpha5
+iam:
+  vpcResourceControllerPolicy: true
+  withOIDC: true
+kind: ClusterConfig
+managedNodeGroups:
+- amiFamily: AmazonLinux2
+  desiredCapacity: 3
+  disableIMDSv1: true
+  disablePodIMDS: false
+  iam:
+    attachPolicyARNs:
+    - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+    - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+    - arn:aws:iam::aws:policy/AmazonS3FullAccess
+    - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
+    - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+    withAddonPolicies:
+      albIngress: false
+      appMesh: null
+      appMeshPreview: null
+      autoScaler: false
+      awsLoadBalancerController: false
+      certManager: false
+      cloudWatch: false
+      ebs: false
+      efs: false
+      externalDNS: false
+      fsx: false
+      imageBuilder: false
+      xRay: false
+  instanceSelector: {}
+  instanceType: t3.medium
+  labels:
+    alpha.eksctl.io/cluster-name: devsftesting-eks
+    alpha.eksctl.io/nodegroup-name: my-mng
+    role: shared
+  maxSize: 10
+  minSize: 3
+  name: my-mng
+  preBootstrapCommands:
+  - sudo yum update -y --security
+  - sudo yum install -y amazon-ssm-agent
+  - sudo systemctl enable amazon-ssm-agent
+  - sudo systemctl start amazon-ssm-agent
+  privateNetworking: true
+  releaseVersion: ""
+  securityGroups:
+    withLocal: null
+    withShared: null
+  ssh:
+    allow: false
+  tags:
+    Environment: developmnent
+    Gamelong: testing
+    Reserve: none
+    Service: eks
+    Studio: sf
+    alpha.eksctl.io/nodegroup-name: my-mng
+    alpha.eksctl.io/nodegroup-type: managed
+  volumeIOPS: 3000
+  volumeSize: 10
+  volumeThroughput: 125
+  volumeType: gp3
+metadata:
+  name: devsftesting-eks
+  region: us-west-2
+  tags:
+    Environment: developmnent
+    Gamelong: testing
+    Reserve: none
+    Service: eks
+    Studio: sf
+  version: "1.28"
+privateCluster:
+  enabled: false
+  skipEndpointCreation: false
+vpc:
+  cidr: 172.18.0.0/16
+  clusterEndpoints:
+    privateAccess: false
+    publicAccess: true
+  id: vpc-04475aebf70aa49e3
+  manageSharedNodeSecurityGroupRules: true
+  nat:
+    gateway: Disable
+  subnets:
+    private:
+      us-west-2a:
+        az: us-west-2a
+        id: subnet-093b8d76a31cfd58c
+      us-west-2b:
+        az: us-west-2b
+        id: subnet-0820c4120afd454cc
+      us-west-2c:
+        az: us-west-2c
+        id: subnet-0275f3983036ccc3e
+    public:
+      us-west-2a:
+        az: us-west-2a
+        id: subnet-0f9fb21227ab6836d
+      us-west-2b:
+        az: us-west-2b
+        id: subnet-02d0a4bee2c6a7b2c
+      us-west-2c:
+        az: us-west-2c
+        id: subnet-0000e1047544319dd
